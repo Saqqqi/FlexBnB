@@ -58,13 +58,13 @@ class User(AbstractBaseUser, PermissionsMixin):
     USERNAME_FIELD = 'email'
     EMAIL_FIELD = 'email'
     REQUIRED_FIELDS = ['name',]
-    
-def avatar_url(self):
-    if self.avatar:
-        return f'{settings.WEBSITE_URL}{self.avatar.url}'
-    else:
+
+    def avatar_url(self):
+        if self.avatar:
+            return f'{settings.WEBSITE_URL}{self.avatar.url}'
         return ''
-def __str__(self):
+
+    def __str__(self):
         return self.email
 
     
