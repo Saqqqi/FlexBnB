@@ -13,7 +13,7 @@ import DashboardLayout from '../../components/Host/DashboardLayout';
 import StatsCard from '../../components/Host/StatsCard';
 import DataTable from '../../components/Host/DataTable';
 import DonutChart from '../../components/Host/DonutChart';
-import { hostAPI } from '../../lib/api';
+import { useApiAuth } from '../../lib/auth-api';
 
 interface DashboardStats {
   total_properties: number;
@@ -46,6 +46,7 @@ interface Reservation {
 }
 
 const HostDashboard = () => {
+  const { getAuthHeaders } = useApiAuth();
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [recentReservations, setRecentReservations] = useState<Reservation[]>([]);
   const [pendingRequests, setPendingRequests] = useState<Reservation[]>([]);
