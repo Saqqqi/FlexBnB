@@ -59,8 +59,6 @@ const ReservationSideBar = ({ property }: ReservationSideBarProps) => {
 
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
-  const [pendingCard, setPendingCard] = useState('');
-  const [pendingExpiry, setPendingExpiry] = useState('');
   const [guests, setGuests] = useState(1);
 
   const onDateRangeChange = useCallback((range: RangeKeyDict) => {
@@ -110,9 +108,7 @@ const ReservationSideBar = ({ property }: ReservationSideBarProps) => {
     setIsPaymentModalOpen(true);
   };
 
-  const handleRequestConfirm = (card: string, expiry: string) => {
-    setPendingCard(card);
-    setPendingExpiry(expiry);
+  const handleRequestConfirm = () => {
     setIsPaymentModalOpen(false);
     setIsConfirmModalOpen(true);
   };
@@ -351,14 +347,16 @@ const ReservationSideBar = ({ property }: ReservationSideBarProps) => {
         isOpen={isPaymentModalOpen}
         onClose={() => setIsPaymentModalOpen(false)}
         amount={calculateTotalPrice()}
-        onRequestConfirm={handleRequestConfirm}
+        propertyId={property.id}
+        propertyTitle={property.title}
+        startDate={dateRange[0].startDate?.toLocaleDateString() || ''}
+        endDate={dateRange[0].endDate?.toLocaleDateString() || ''}
+        guests={guests}
       />
       <ConfirmationModal
         isOpen={isConfirmModalOpen}
         onClose={() => setIsConfirmModalOpen(false)}
         onConfirm={handleConfirmReservation}
-        card={pendingCard}
-        expiry={pendingExpiry}
         property={{
           title: property.title,
           startDate: dateRange[0].startDate?.toLocaleDateString() || '',
