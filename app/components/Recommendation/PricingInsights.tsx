@@ -72,8 +72,11 @@ const PricingInsights: React.FC<PricingInsightsProps> = ({ propertyId, checkIn, 
                 
                 const result = await response.json();
                 setData(result);
-            } catch (error) {
-                console.error('Error fetching pricing insights:', error);
+            } catch {
+                // Pricing insights are non-critical — fail silently in production
+                if (process.env.NODE_ENV !== 'production') {
+                  console.error('Error fetching pricing insights');
+                }
             } finally {
                 setLoading(false);
             }

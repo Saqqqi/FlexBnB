@@ -4,7 +4,9 @@ from django.contrib.auth import get_user_model
 from django.conf import settings
 import jwt
 import requests
-import os
+import logging
+
+logger = logging.getLogger(__name__)
 
 User = get_user_model()
 
@@ -63,8 +65,8 @@ class ClerkAuthentication(BaseAuthentication):
                     }
                 )
             except jwt.InvalidTokenError as e:
-                print(f"Token verification failed: {str(e)}")
-                print(f"Token payload: {unverified_payload}")
+                # Log only the error type in production — never log the token payload
+                logger.warning('Token verification failed: %s', type(e).__name__)
                 raise
             
             # Get user information from the token
@@ -103,5 +105,5 @@ class ClerkAuthentication(BaseAuthentication):
         except jwt.InvalidTokenError as e:
             raise AuthenticationFailed(f'Invalid token: {str(e)}')
         except Exception as e:
-            print(f"Authentication error: {str(e)}")
+            logger.error('Authentication error: %s', type(e).__name__)
             raise AuthenticationFailed(f'Authentication failed: {str(e)}') 

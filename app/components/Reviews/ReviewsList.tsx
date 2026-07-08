@@ -25,28 +25,23 @@ interface ReviewItem {
 const formatDate = (s: string) => new Date(s).toLocaleDateString("en-US", { timeZone: "UTC" });
 
 const ReviewsList = ({ propertyId, pageSize = 5, refreshKey }: ReviewsListProps) => {
-  console.log('ReviewsList component initialized with propertyId:', propertyId);
   const [reviews, setReviews] = useState<ReviewItem[]>([]);
   const [count, setCount] = useState(0);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
 
   const fetchReviews = async (pageNum: number) => {
-    console.log('fetchReviews function called with pageNum:', pageNum);
-    debugger;
     try {
       setLoading(true);
       const url = `${process.env.NEXT_PUBLIC_API_HOST}/api/booking/reviews/?property_id=${propertyId}&page=${pageNum}&page_size=${pageSize}`;
-      console.log('Fetching reviews from:', url);
       const res = await fetch(url);
-      console.log('Reviews response:', res);
-      console.log('Reviews response status:', res.status);
       const data = await res.json();
-      console.log('Reviews data:', data);
       setReviews(data.results || []);
       setCount(data.count || 0);
     } catch (e) {
-      console.error("Failed to load reviews", e);
+      if (process.env.NODE_ENV !== 'production') {
+        console.error('Failed to load reviews', e instanceof Error ? e.message : e);
+      }
     } finally {
       setLoading(false);
     }

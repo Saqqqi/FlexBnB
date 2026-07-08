@@ -11,12 +11,12 @@ const apiService = {
       },
       credentials: 'include',
     });
-    
+
     if (!response.ok) {
       const errorData = await response.json();
       throw new Error(errorData.message || 'Failed to fetch');
     }
-    
+
     return response.json();
   },
 
@@ -26,21 +26,15 @@ const apiService = {
         throw new Error('No authentication token provided');
       }
 
-      console.log('Making POST request to:', `${process.env.NEXT_PUBLIC_API_HOST}${url}`);
-      console.log('With token:', token);
-
       const headers: Record<string, string> = {
         'Authorization': `Bearer ${token}`,
         'Accept': 'application/json',
       };
 
-      // Don't set Content-Type for FormData
+      // Don't set Content-Type for FormData — browser sets it with boundary
       if (!(data instanceof FormData)) {
         headers['Content-Type'] = 'application/json';
       }
-
-      console.log('Request headers:', headers);
-      console.log('Request data:', data instanceof FormData ? 'FormData object' : data);
 
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_HOST}${url}`, {
         method: 'POST',
@@ -49,19 +43,15 @@ const apiService = {
         credentials: 'include',
       });
 
-      console.log('Response status:', response.status);
-      
       let responseData;
       const contentType = response.headers.get('content-type');
       if (contentType && contentType.includes('application/json')) {
         responseData = await response.json();
-        console.log('Response data:', responseData);
       } else {
         const textData = await response.text();
-        console.log('Response text:', textData);
         try {
           responseData = JSON.parse(textData);
-        } catch (e) {
+        } catch {
           responseData = { message: textData };
         }
       }
@@ -69,17 +59,19 @@ const apiService = {
       if (!response.ok) {
         throw {
           status: response.status,
-          ...responseData
+          ...responseData,
         };
       }
 
       return responseData;
     } catch (error) {
-      console.error('Detailed error in POST request:', {
-        error,
-        message: error instanceof Error ? error.message : 'Unknown error',
-        stack: error instanceof Error ? error.stack : undefined
-      });
+      // Log only the error message and status — never log tokens or headers
+      if (process.env.NODE_ENV !== 'production') {
+        console.error(
+          'POST request failed:',
+          error instanceof Error ? error.message : 'Unknown error'
+        );
+      }
       throw error;
     }
   },
@@ -97,22 +89,25 @@ const apiService = {
       });
 
       const responseData = await response.json();
-      
+
       if (!response.ok) {
         throw {
           status: response.status,
-          ...responseData
+          ...responseData,
         };
       }
 
       return responseData;
     } catch (error) {
-      console.error('Error in POST request (without token):', error);
+      if (process.env.NODE_ENV !== 'production') {
+        console.error(
+          'POST (unauthenticated) request failed:',
+          error instanceof Error ? error.message : 'Unknown error'
+        );
+      }
       throw error;
     }
   },
 };
 
 export default apiService;
-
-

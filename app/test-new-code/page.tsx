@@ -1,8 +1,6 @@
 'use client';
 
 export default function TestPage() {
-  console.log('TEST PAGE IS LOADING - NEW CODE WORKS!', new Date().toISOString());
-  
   return (
     <div className="p-8">
       <h1 className="text-4xl font-bold">TEST PAGE - NEW CODE VERSION</h1>

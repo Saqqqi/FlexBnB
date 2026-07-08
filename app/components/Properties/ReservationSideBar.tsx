@@ -38,8 +38,6 @@ const ReservationSideBar = ({ property }: ReservationSideBarProps) => {
   const { user } = useUser();
   const { getToken } = useAuth();
   const userId = user?.id;
-  console.log('Clerk user:', user);
-  console.log('Clerk userId:', userId);
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const [dateRange, setDateRange] = useState<Range[]>([{
     startDate: new Date(),
@@ -136,11 +134,16 @@ const ReservationSideBar = ({ property }: ReservationSideBarProps) => {
       if (response.ok) {
         showBookingConfirmation(property.title);
       } else {
-        const errorData = await response.json();
-        console.error('Failed to create reservation:', errorData);
+        // Log only status code in dev — never log error payloads that may contain user data
+        if (process.env.NODE_ENV !== 'production') {
+          const errorData = await response.json();
+          console.error('Failed to create reservation — status:', response.status, errorData);
+        }
       }
     } catch (e) {
-      console.error('Failed to create reservation', e);
+      if (process.env.NODE_ENV !== 'production') {
+        console.error('Failed to create reservation', e instanceof Error ? e.message : e);
+      }
     }
   };
 
