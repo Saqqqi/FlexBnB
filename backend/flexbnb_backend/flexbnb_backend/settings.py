@@ -31,6 +31,8 @@ SITE_ID=1
 
 WEBSITE_URL = os.environ.get("WEBSITE_URL", "http://localhost:8000")
 
+# SIMPLE_JWT governs locally-issued tokens (dj_rest_auth / rest_framework_simplejwt).
+# Clerk-issued tokens are validated separately by ClerkAuthentication using RS256 + JWKS.
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=60),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
@@ -38,7 +40,7 @@ SIMPLE_JWT = {
     "BLACKLIST_AFTER_ROTATION": False,
     "UPDATE_LAST_LOGIN": True,
     "SIGNING_KEY": os.environ.get("JWT_SIGNING_KEY", ""),
-    "ALOGRIGTHM": "HS512",
+    "ALGORITHM": "HS512",  # Fixed typo: was "ALOGRIGTHM" — silently ignored before this fix
 }
 ACCOUNT_USER_MODEL_USERNAME_FIELD = None
 ACCOUNT_EMAIL_REQUIRED = True
